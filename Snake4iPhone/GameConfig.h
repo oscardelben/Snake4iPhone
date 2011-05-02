@@ -24,5 +24,17 @@
 //
 #define GAME_AUTOROTATION kGameAutorotationUIViewController
 
+#define kRows 20
+#define kColumns 30
+
+#define kCellWidth 15
+
+#define kXOffset 10
+#define kYOffset 15
+
+#define kMoveUp 1
+#define kMoveRight 2
+#define kMoveDown 3
+#define kMoveLeft 4
 
 #endif // __GAME_CONFIG_H
