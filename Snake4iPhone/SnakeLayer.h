@@ -14,9 +14,7 @@
 }
 
 @property (nonatomic, retain) NSMutableArray *snake;
-@property (nonatomic, retain) NSMutableArray *drawnCells;
-@property (nonatomic, retain) NSNumber *nextMovement;
-@property (nonatomic, retain) NSMutableArray *currentPosition;
+@property (nonatomic, assign) int direction;
 
 +(CCScene *) scene;
 

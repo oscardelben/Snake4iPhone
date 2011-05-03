@@ -8,24 +8,28 @@
 
 #import "SnakeLayer.h"
 #import "GameConfig.h"
-#import "SnakeCell.h"
+
+#define kColumnIndex 0
+#define kRowIndex    1
+#define kSpriteIndex 2
 
 @interface SnakeLayer (PrivateMethods)
 
 - (void)resetGame;
-- (void)removeAllCells;
 - (void)advance:(ccTime)dt;
 - (void)drawSnake;
-- (void)updateCurrentPosition:(int)x andY:(int)y;
+- (CCSprite *)snakeCell:(int)column row:(int)row;
 
 @end
+
+// Snake is an ordered array of the form:
+// [[column, row, cell], [column, row, cell]]
+// where column and row are the x and y coordinates, and cell is a pointer to the CCSprite (so that we can remove it later)
 
 @implementation SnakeLayer
 
 @synthesize snake;
-@synthesize drawnCells;
-@synthesize nextMovement;
-@synthesize currentPosition;
+@synthesize direction;
 
 +(CCScene *) scene
 {
@@ -52,12 +56,7 @@
         [self addChild:background];
         
         self.isTouchEnabled = YES;
-        
-        self.drawnCells = [NSMutableArray array];
-        
-        // currentPosition is an array that contains the current cell head position: [x, y]
-        self.currentPosition = [NSMutableArray array];
-        
+                
         [self resetGame];
 
         [self schedule:@selector(advance:) interval:1];
@@ -69,94 +68,98 @@
 - (void)dealloc
 {
     [snake release];
-    [drawnCells release];
-    [nextMovement release];
-    [currentPosition release];
     [super dealloc];
 }
 
 #pragma mark -
 
-- (void)removeAllCells
+- (CCSprite *)snakeCell:(int)column row:(int)row
 {
-    for (int i = 0; i < [self.drawnCells count]; i++) 
-    {
-        CCNode *node = (CCNode *)[self.drawnCells objectAtIndex:i];
-        [self removeChild:node cleanup:YES];
-    }
+    CCSprite *sprite = [CCSprite spriteWithFile:@"snake-body.png"];
+    
+    float x = kCellWidth * column + kXOffset;
+    float y = kCellWidth * row + kYOffset;
+    
+    sprite.anchorPoint = ccp(0, 0);
+    sprite.position = CGPointMake(x, y);
+    
+    return sprite;
 }
 
 - (void)resetGame
 {    
     self.snake = [NSMutableArray array];
     
-    // Reset the snake array
-    for (int i = 0; i < kColumns; i++) 
-    {
-        // Add an array that represents rows
-        [self.snake insertObject:[NSMutableArray array] atIndex:i];
+    self.direction = kMoveRight;
         
-        for (int j = 0; j < kRows; j++) 
-        {
-            NSMutableArray *row = [self.snake objectAtIndex:i];
-            [row insertObject:[NSNumber numberWithBool:NO] atIndex:j];
-        }
-    }
-        
-    // Add the first point
-    NSMutableArray *column = [self.snake objectAtIndex:10];
-    [column insertObject:[NSNumber numberWithBool:YES] atIndex:15];
-    
-    [self updateCurrentPosition:10 andY:15];
-    
     [self drawSnake];
 }
 
 - (void)drawSnake
 {
-    // TODO: check that nextMovement doesn't conflict with the snake or that it raises an error.
+    // Add a new cell in the new direction
+    int column;
+    int row;
     
-    [self removeAllCells];
-    
-    SnakeCell *lastCell = nil; // should be the current head
-    
-    for (int i = 0; i < kColumns; i++) 
+    if ([snake count] > 0) 
     {
-        for (int j = 0; j < kRows; j++) 
-        {
-            NSMutableArray *row = [self.snake objectAtIndex:i];
-            
-            BOOL visible = [[row objectAtIndex:j] boolValue];
-            
-            if (visible)
-            {
-                SnakeCell *cell = [[SnakeCell alloc] init];
-                cell.column = i;
-                cell.row = j;
+        column = [[[snake objectAtIndex:0] objectAtIndex:kColumnIndex] intValue];
+        row = [[[snake objectAtIndex:0] objectAtIndex:kRowIndex] intValue];
+        
+        // remove tail of snake
+        CCSprite *cell = (CCSprite *)[[snake lastObject] objectAtIndex:kSpriteIndex];
+        [cell removeFromParentAndCleanup:YES];
+        
+        int lastIndex = [snake count] - 1;
+        [snake removeObjectAtIndex:lastIndex];
+    }
+    else // empty snake
+    {
+        column = 3; // put into a configuration
+        row = 5; // put into a configuration
+    }
 
-                if (lastCell) {
-                    cell.parentCell = lastCell;
-                }
-                
-                [self.drawnCells addObject:cell];
-                
-                lastCell = cell;
-                
-                // Draw cell
-                
-                CCSprite *sprite = [cell spriteRepresentation];
-           
-                [self addChild:sprite];
-            }
-        }
-    }    
+
+    // Add a new cell in the direction
+    switch (self.direction) {
+        case kMoveUp:
+            column = column;
+            row = row + 1;
+            break;
+        
+        case kMoveRight:
+            column = column + 1;
+            row = row;
+            break;
+            
+        case kMoveDown:
+            column = column;
+            row = row - 1;
+            break;
+            
+        case kMoveLeft:
+            column = column - 1;
+            row = row;
+            break;
+            
+        default:
+            NSLog(@"nextMovement unknown: %@", self.direction);
+            break;
+    }
+    
+    // TODO: check if the new position is valid
+    
+    // Draw a new cell
+    CCSprite *cell = [self snakeCell:column row:row];
+    
+    // Add information to the snake
+    NSArray *array = [NSArray arrayWithObjects:[NSNumber numberWithInt:column], [NSNumber numberWithInt:row], cell, nil];
+    [self.snake insertObject:array atIndex:0];
+     
+    // Draw the cell
+    [self addChild:cell];
 }
 
-- (void)updateCurrentPosition:(int)x andY:(int)y
-{
-    [currentPosition insertObject:[NSNumber numberWithInt:x] atIndex:0];
-    [currentPosition insertObject:[NSNumber numberWithInt:y] atIndex:1];
-}
 
 #pragma mark -
 
@@ -173,7 +176,7 @@
     CGPoint location = [[CCDirector sharedDirector] convertToGL:[touch locationInView:touch.view]];
         
     // TODO: this is incorrect of course
-    CCNode *headCell = (CCNode *)[drawnCells objectAtIndex:0];
+    CCSprite *headCell = (CCSprite *)[[snake objectAtIndex:0] objectAtIndex:kSpriteIndex];
     
     CGPoint cellCenter = CGPointMake(headCell.position.x + kCellWidth / 2, headCell.position.y + kCellWidth / 2);
 
@@ -190,12 +193,12 @@
             if (normalizedLocation.y > normalizedLocation.x)
             {
                 NSLog(@"top");
-                self.nextMovement = [NSNumber numberWithInt:kMoveUp];
+                self.direction = kMoveUp;
             }
             else
             {
                 NSLog(@"right");
-                self.nextMovement = [NSNumber numberWithInt:kMoveRight];
+                self.direction = kMoveRight;
             }
         
         } else
@@ -204,12 +207,12 @@
             if (normalizedLocation.y > normalizedLocation.x)
             {
                 NSLog(@"top");
-                self.nextMovement = [NSNumber numberWithInt:kMoveUp];
+                self.direction = kMoveUp;
             }
             else
             {
                 NSLog(@"left");
-                self.nextMovement = [NSNumber numberWithInt:kMoveLeft];
+                self.direction = kMoveLeft;
             }
         }
     } else
@@ -220,12 +223,12 @@
             if (normalizedLocation.y > normalizedLocation.x)
             {
                 NSLog(@"down");
-                self.nextMovement = [NSNumber numberWithInt:kMoveDown];
+                self.direction = kMoveDown;
             }
             else
             {
                 NSLog(@"right");
-                self.nextMovement = [NSNumber numberWithInt:kMoveRight];
+                self.direction = kMoveRight;
             }
             
         } else
@@ -234,12 +237,12 @@
             if (normalizedLocation.y > normalizedLocation.x)
             {
                 NSLog(@"down");
-                self.nextMovement = [NSNumber numberWithInt:kMoveDown];
+                self.direction = kMoveDown;
             }
             else
             {
                 NSLog(@"left");
-                self.nextMovement = [NSNumber numberWithInt:kMoveLeft];
+                self.direction = kMoveLeft;
             }
         }
     }
