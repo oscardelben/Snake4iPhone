@@ -24,8 +24,8 @@
 //
 #define GAME_AUTOROTATION kGameAutorotationUIViewController
 
-#define kRows 20
-#define kColumns 30
+#define kRows 30
+#define kColumns 20
 
 #define kCellWidth 15
 
@@ -36,5 +36,7 @@
 #define kMoveRight 2
 #define kMoveDown 3
 #define kMoveLeft 4
+
+#define kSnakeSpeed 0.2
 
 #endif // __GAME_CONFIG_H

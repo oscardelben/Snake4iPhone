@@ -14,6 +14,7 @@
 }
 
 @property (nonatomic, retain) NSMutableArray *snake;
+@property (nonatomic, retain) NSMutableArray *food;
 @property (nonatomic, assign) int direction;
 
 +(CCScene *) scene;

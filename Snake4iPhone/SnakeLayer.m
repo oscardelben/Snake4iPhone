@@ -17,7 +17,13 @@
 
 - (void)resetGame;
 - (void)advance:(ccTime)dt;
+- (void)removeSnakeTail;
+- (void)addSnakeCell:(int)column andRow:(int)row;
 - (void)drawSnake;
+- (void)addFood;
+- (void)eatFood;
+- (BOOL)eatingFood:(int)column andRow:(int)row;
+- (BOOL)positionTaken:(int)column andRow:(int)row;
 - (CCSprite *)snakeCell:(int)column row:(int)row;
 
 @end
@@ -30,6 +36,7 @@
 
 @synthesize snake;
 @synthesize direction;
+@synthesize food;
 
 +(CCScene *) scene
 {
@@ -59,7 +66,7 @@
                 
         [self resetGame];
 
-        [self schedule:@selector(advance:) interval:1];
+        [self schedule:@selector(advance:) interval:kSnakeSpeed];
     }
     
     return self;
@@ -68,6 +75,7 @@
 - (void)dealloc
 {
     [snake release];
+    [food release];
     [super dealloc];
 }
 
@@ -105,13 +113,6 @@
     {
         column = [[[snake objectAtIndex:0] objectAtIndex:kColumnIndex] intValue];
         row = [[[snake objectAtIndex:0] objectAtIndex:kRowIndex] intValue];
-        
-        // remove tail of snake
-        CCSprite *cell = (CCSprite *)[[snake lastObject] objectAtIndex:kSpriteIndex];
-        [cell removeFromParentAndCleanup:YES];
-        
-        int lastIndex = [snake count] - 1;
-        [snake removeObjectAtIndex:lastIndex];
     }
     else // empty snake
     {
@@ -143,23 +144,135 @@
             break;
             
         default:
-            NSLog(@"nextMovement unknown: %@", self.direction);
+            NSLog(@"direction unknown: %@", self.direction);
             break;
     }
     
     // TODO: check if the new position is valid
     
-    // Draw a new cell
+    // Draw the new head
+    [self addSnakeCell:column andRow:row];
+
+    // If the snake is not eating, we just remove its tail to simulate that it's moving
+    if ([self eatingFood:column andRow:row]) 
+    {
+        [self eatFood];
+    }
+    else
+    {
+        [self removeSnakeTail];
+    }
+    
+    [self addFood];
+}
+
+- (BOOL)positionTaken:(int)column andRow:(int)row
+{
+    BOOL result = NO;
+    
+    for (int i = 0; i < [[self snake] count]; i++) 
+    {
+        NSArray *columnArray = [self.snake objectAtIndex:i];
+        
+        int currentColumn = [[columnArray objectAtIndex:kColumnIndex] intValue];
+        int currentRow = [[columnArray objectAtIndex:kRowIndex] intValue];
+        
+        if (column == currentColumn && row == currentRow) 
+        {
+            result = YES;
+            break;
+        }
+    }
+    
+    return result;
+}
+
+- (void)addFood
+{
+    // If there's already food, return
+    if (self.food) {
+        return;
+    }
+
+    // positions is an array of possible positions of the form [[column, row], [column, row], ...]
+    
+    NSMutableArray *positions = [NSMutableArray array];
+    
+    for (int i = 0; i < kColumns; i++) 
+    {
+        for (int j = 0; j < kRows; j++) 
+        {
+            if (![self positionTaken:i andRow:j]) {
+                [positions addObject:[NSArray arrayWithObjects:[NSNumber numberWithInt:i], [NSNumber numberWithInt:j], nil]];
+            }
+        }
+    }
+    
+    // TODO: show a message or something
+    
+    if ([positions count] > 0) 
+    {
+        int randomIndex = arc4random() % [positions count];
+        NSArray *position = [positions objectAtIndex:randomIndex];
+        
+        int column = [[position objectAtIndex:kColumnIndex] intValue];
+        int row = [[position objectAtIndex:kRowIndex] intValue];
+        
+        // Food is represented through an array of the format [column, row, sprite]
+        CCSprite *cell = [self snakeCell:column row:row];
+        
+        self.food = [NSArray arrayWithObjects:[NSNumber numberWithInt:column], [NSNumber numberWithInt:row], cell, nil];
+        
+        [self addChild:cell];
+    }
+    else
+    {
+        NSLog(@"Game ended.");
+    }
+}
+
+- (void)removeSnakeTail
+{
+    // Only remove if there's more than one block
+    if ([snake count] > 1) {
+        CCSprite *snakeTailSprite = (CCSprite *)[[snake lastObject] objectAtIndex:kSpriteIndex];
+        [snakeTailSprite removeFromParentAndCleanup:YES];
+        
+        int lastIndex = [snake count] - 1;
+        [snake removeObjectAtIndex:lastIndex];
+    }
+}
+
+- (void)addSnakeCell:(int)column andRow:(int)row
+{
     CCSprite *cell = [self snakeCell:column row:row];
     
-    // Add information to the snake
+    // Add information to the snake array
     NSArray *array = [NSArray arrayWithObjects:[NSNumber numberWithInt:column], [NSNumber numberWithInt:row], cell, nil];
     [self.snake insertObject:array atIndex:0];
-     
+    
     // Draw the cell
     [self addChild:cell];
 }
 
+- (BOOL)eatingFood:(int)column andRow:(int)row
+{
+    int foodColumn = [[self.food objectAtIndex:kColumnIndex] intValue];
+    int foodRow = [[self.food objectAtIndex:kRowIndex] intValue];
+    
+    return foodColumn == column && foodRow == row;
+}
+                                
+- (void)eatFood
+{
+    CCSprite *sprite = [self.food objectAtIndex:kSpriteIndex];
+    [sprite removeFromParentAndCleanup:YES];
+    
+    // Set food to nil in order to generate a new one.
+    self.food = nil;
+    
+    // TODO: if all the rows and column have been fille dup we should display a win message.
+}
 
 #pragma mark -
 
@@ -192,12 +305,10 @@
             
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                NSLog(@"top");
                 self.direction = kMoveUp;
             }
             else
             {
-                NSLog(@"right");
                 self.direction = kMoveRight;
             }
         
@@ -206,12 +317,10 @@
             
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                NSLog(@"top");
                 self.direction = kMoveUp;
             }
             else
             {
-                NSLog(@"left");
                 self.direction = kMoveLeft;
             }
         }
@@ -222,12 +331,10 @@
 
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                NSLog(@"down");
                 self.direction = kMoveDown;
             }
             else
             {
-                NSLog(@"right");
                 self.direction = kMoveRight;
             }
             
@@ -236,12 +343,10 @@
             
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                NSLog(@"down");
                 self.direction = kMoveDown;
             }
             else
             {
-                NSLog(@"left");
                 self.direction = kMoveLeft;
             }
         }
