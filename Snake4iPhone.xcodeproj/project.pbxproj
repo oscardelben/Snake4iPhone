@@ -121,7 +121,6 @@
 		557249E4136EBE8800046EAC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 557249E3136EBE8800046EAC /* main.m */; };
 		557249E7136EBE8800046EAC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 557249E6136EBE8800046EAC /* AppDelegate.m */; };
 		557249EA136EBE8800046EAC /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 557249E9136EBE8800046EAC /* RootViewController.m */; };
-		557249ED136EBE8800046EAC /* HelloWorldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 557249EC136EBE8800046EAC /* HelloWorldLayer.m */; };
 		557249F6136EBFAD00046EAC /* SnakeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 557249F5136EBFAD00046EAC /* SnakeLayer.m */; };
 		557249F8136EC0C200046EAC /* snake-body.png in Resources */ = {isa = PBXBuildFile; fileRef = 557249F7136EC0C200046EAC /* snake-body.png */; };
 		557249FE136EDF9600046EAC /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 557249FD136EDF9600046EAC /* background.png */; };
@@ -360,8 +359,6 @@
 		557249E6136EBE8800046EAC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		557249E8136EBE8800046EAC /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		557249E9136EBE8800046EAC /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
-		557249EB136EBE8800046EAC /* HelloWorldLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelloWorldLayer.h; sourceTree = "<group>"; };
-		557249EC136EBE8800046EAC /* HelloWorldLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloWorldLayer.m; sourceTree = "<group>"; };
 		557249EE136EBE8800046EAC /* GameConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameConfig.h; sourceTree = "<group>"; };
 		557249F4136EBFAD00046EAC /* SnakeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SnakeLayer.h; sourceTree = "<group>"; };
 		557249F5136EBFAD00046EAC /* SnakeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnakeLayer.m; sourceTree = "<group>"; };
@@ -431,8 +428,6 @@
 				557249E6136EBE8800046EAC /* AppDelegate.m */,
 				557249E8136EBE8800046EAC /* RootViewController.h */,
 				557249E9136EBE8800046EAC /* RootViewController.m */,
-				557249EB136EBE8800046EAC /* HelloWorldLayer.h */,
-				557249EC136EBE8800046EAC /* HelloWorldLayer.m */,
 				557249EE136EBE8800046EAC /* GameConfig.h */,
 				557249F4136EBFAD00046EAC /* SnakeLayer.h */,
 				557249F5136EBFAD00046EAC /* SnakeLayer.m */,
@@ -881,7 +876,6 @@
 				557249E4136EBE8800046EAC /* main.m in Sources */,
 				557249E7136EBE8800046EAC /* AppDelegate.m in Sources */,
 				557249EA136EBE8800046EAC /* RootViewController.m in Sources */,
-				557249ED136EBE8800046EAC /* HelloWorldLayer.m in Sources */,
 				557249F6136EBFAD00046EAC /* SnakeLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
