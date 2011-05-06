@@ -39,4 +39,7 @@
 
 #define kSnakeSpeed 0.2
 
+#define kDefaultColumn 5
+#define kDefaultRow 3
+
 #endif // __GAME_CONFIG_H

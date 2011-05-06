@@ -30,9 +30,6 @@
 
 @end
 
-// Snake is an ordered array of the form:
-// [[column, row, cell], [column, row, cell]]
-// where column and row are the x and y coordinates, and cell is a pointer to the CCSprite (so that we can remove it later)
 
 @implementation SnakeLayer
 
@@ -85,6 +82,7 @@
 
 #pragma mark -
 
+// Creates a sprite representing a snake cell for the given coordinates
 - (CCSprite *)snakeCell:(int)column row:(int)row
 {
     CCSprite *sprite = [CCSprite spriteWithFile:@"snake-body.png"];
@@ -109,7 +107,7 @@
 
 - (void)drawSnake
 {
-    // Add a new cell in the new direction
+    // Get the current coordinates
     int column;
     int row;
     
@@ -120,12 +118,13 @@
     }
     else // empty snake
     {
-        column = 3; // put into a configuration
-        row = 5; // put into a configuration
+        // Snake is empty, assign default position (which will be incremented by self.position)
+        column = kDefaultColumn;
+        row = kDefaultRow;
     }
 
 
-    // Add a new cell in the direction
+    // Calculate the new position based on self.direction
     switch (self.direction) {
         case kMoveUp:
             column = column;
@@ -149,7 +148,7 @@
             
         default:
             NSLog(@"direction unknown: %@", self.direction);
-            break;
+            return;
     }
     
     // check if the new position is valid
@@ -158,7 +157,7 @@
         return;
     }
     
-    // Draw the new head
+    // Add the new position to the snake
     [self addSnakeCell:column andRow:row];
 
     // If the snake is not eating, we just remove its tail to simulate that it's moving
@@ -166,11 +165,13 @@
     {
         [self eatFood];
     }
+    // Otherwise we keep it there, to simulate growth
     else
     {
         [self removeSnakeTail];
     }
     
+    // Finally we check wherever we need to add more food
     [self addFood];
 }
 
@@ -275,32 +276,19 @@
 {
     bool insideBounds = column >= 0 && column < kColumns && row >= 0 && row < kRows;
     
-    bool freeCell = YES;
-    
-    for (int i = 0; i < [snake count]; i++) {
-        NSArray *array = [snake objectAtIndex:i];
+    bool positionTaken = [self positionTaken:column andRow:row];
         
-        int currentRow = [[array objectAtIndex:kRowIndex] intValue];
-        int currentColumn = [[array objectAtIndex:kColumnIndex] intValue];
-        
-        if (currentRow == row && currentColumn == column) {
-            freeCell = NO;
-            break;
-        }
-    }
-    
-    return insideBounds && freeCell;
+    return insideBounds && !positionTaken;
 }
 
 - (void)eatFood
 {
+    // Remove the current food from the screen
     CCSprite *sprite = [self.food objectAtIndex:kSpriteIndex];
     [sprite removeFromParentAndCleanup:YES];
     
-    // Set food to nil in order to generate a new one.
+    // Set food to nil in order to generate a new one during the next loop.
     self.food = nil;
-    
-    // TODO: if all the rows and column have been fille dup we should display a win message.
 }
 
 #pragma mark -
@@ -324,7 +312,6 @@
     UITouch *touch = [touches anyObject];
     CGPoint location = [[CCDirector sharedDirector] convertToGL:[touch locationInView:touch.view]];
         
-    // TODO: this is incorrect of course
     CCSprite *headCell = (CCSprite *)[[snake objectAtIndex:0] objectAtIndex:kSpriteIndex];
     
     CGPoint cellCenter = CGPointMake(headCell.position.x + kCellWidth / 2, headCell.position.y + kCellWidth / 2);
