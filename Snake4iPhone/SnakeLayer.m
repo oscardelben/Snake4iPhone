@@ -305,11 +305,13 @@
             
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                self.direction = kMoveUp;
+                if (self.direction != kMoveDown)
+                    self.direction = kMoveUp;
             }
             else
             {
-                self.direction = kMoveRight;
+                if (self.direction != kMoveLeft)
+                    self.direction = kMoveRight;
             }
         
         } else
@@ -317,11 +319,13 @@
             
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                self.direction = kMoveUp;
+                if (self.direction != kMoveDown)
+                    self.direction = kMoveUp;
             }
             else
             {
-                self.direction = kMoveLeft;
+                if (self.direction != kMoveRight)
+                    self.direction = kMoveLeft;
             }
         }
     } else
@@ -331,11 +335,13 @@
 
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                self.direction = kMoveDown;
+                if (self.direction != kMoveUp)
+                    self.direction = kMoveDown;
             }
             else
             {
-                self.direction = kMoveRight;
+                if (self.direction != kMoveLeft)
+                    self.direction = kMoveRight;
             }
             
         } else
@@ -343,11 +349,13 @@
             
             if (normalizedLocation.y > normalizedLocation.x)
             {
-                self.direction = kMoveDown;
+                if (self.direction != kMoveUp)
+                    self.direction = kMoveDown;
             }
             else
             {
-                self.direction = kMoveLeft;
+                if (self.direction != kMoveRight)
+                    self.direction = kMoveLeft;
             }
         }
     }
