@@ -24,6 +24,8 @@
 - (void)eatFood;
 - (BOOL)eatingFood:(int)column andRow:(int)row;
 - (BOOL)positionTaken:(int)column andRow:(int)row;
+- (BOOL)validPosition:(int)column andRow:(int)row;
+- (void)crash;
 - (CCSprite *)snakeCell:(int)column row:(int)row;
 
 @end
@@ -37,6 +39,7 @@
 @synthesize snake;
 @synthesize direction;
 @synthesize food;
+@synthesize gameRunning;
 
 +(CCScene *) scene
 {
@@ -63,6 +66,7 @@
         [self addChild:background];
         
         self.isTouchEnabled = YES;
+        self.gameRunning = YES;
                 
         [self resetGame];
 
@@ -148,7 +152,11 @@
             break;
     }
     
-    // TODO: check if the new position is valid
+    // check if the new position is valid
+    if (![self validPosition:column andRow:row]) {
+        [self crash];
+        return;
+    }
     
     // Draw the new head
     [self addSnakeCell:column andRow:row];
@@ -262,7 +270,28 @@
     
     return foodColumn == column && foodRow == row;
 }
-                                
+     
+- (BOOL)validPosition:(int)column andRow:(int)row
+{
+    bool insideBounds = column >= 0 && column < kColumns && row >= 0 && row < kRows;
+    
+    bool freeCell = YES;
+    
+    for (int i = 0; i < [snake count]; i++) {
+        NSArray *array = [snake objectAtIndex:i];
+        
+        int currentRow = [[array objectAtIndex:kRowIndex] intValue];
+        int currentColumn = [[array objectAtIndex:kColumnIndex] intValue];
+        
+        if (currentRow == row && currentColumn == column) {
+            freeCell = NO;
+            break;
+        }
+    }
+    
+    return insideBounds && freeCell;
+}
+
 - (void)eatFood
 {
     CCSprite *sprite = [self.food objectAtIndex:kSpriteIndex];
@@ -278,7 +307,14 @@
 
 - (void)advance:(ccTime)dt
 {
-    [self drawSnake];    
+    if (self.gameRunning) {
+        [self drawSnake];
+    }
+}
+
+- (void)crash
+{
+    self.gameRunning = NO;
 }
 
 #pragma mark -
