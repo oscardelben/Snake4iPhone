@@ -124,6 +124,7 @@
 		557249F6136EBFAD00046EAC /* SnakeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 557249F5136EBFAD00046EAC /* SnakeLayer.m */; };
 		557249F8136EC0C200046EAC /* snake-body.png in Resources */ = {isa = PBXBuildFile; fileRef = 557249F7136EC0C200046EAC /* snake-body.png */; };
 		557249FE136EDF9600046EAC /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 557249FD136EDF9600046EAC /* background.png */; };
+		5584193C138BB75C002E92D8 /* WelcomeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5584193B138BB75C002E92D8 /* WelcomeLayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -364,6 +365,8 @@
 		557249F5136EBFAD00046EAC /* SnakeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnakeLayer.m; sourceTree = "<group>"; };
 		557249F7136EC0C200046EAC /* snake-body.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "snake-body.png"; sourceTree = "<group>"; };
 		557249FD136EDF9600046EAC /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
+		5584193A138BB75C002E92D8 /* WelcomeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeLayer.h; sourceTree = "<group>"; };
+		5584193B138BB75C002E92D8 /* WelcomeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeLayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -431,6 +434,8 @@
 				557249EE136EBE8800046EAC /* GameConfig.h */,
 				557249F4136EBFAD00046EAC /* SnakeLayer.h */,
 				557249F5136EBFAD00046EAC /* SnakeLayer.m */,
+				5584193A138BB75C002E92D8 /* WelcomeLayer.h */,
+				5584193B138BB75C002E92D8 /* WelcomeLayer.m */,
 				5572489B136EBE8500046EAC /* Resources */,
 				557248AF136EBE8600046EAC /* cocos2d */,
 				557249A1136EBE8700046EAC /* CocosDenshion */,
@@ -877,6 +882,7 @@
 				557249E7136EBE8800046EAC /* AppDelegate.m in Sources */,
 				557249EA136EBE8800046EAC /* RootViewController.m in Sources */,
 				557249F6136EBFAD00046EAC /* SnakeLayer.m in Sources */,
+				5584193C138BB75C002E92D8 /* WelcomeLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

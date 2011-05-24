@@ -8,6 +8,7 @@
 
 #import "SnakeLayer.h"
 #import "GameConfig.h"
+#import "WelcomeLayer.h"
 
 #define kColumnIndex 0
 #define kRowIndex    1
@@ -303,6 +304,7 @@
 - (void)crash
 {
     self.gameRunning = NO;
+    [[CCDirector sharedDirector] replaceScene:[WelcomeLayer scene]];
 }
 
 #pragma mark -

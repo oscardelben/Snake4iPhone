@@ -11,6 +11,7 @@
 #import "AppDelegate.h"
 #import "GameConfig.h"
 #import "SnakeLayer.h"
+#import "WelcomeLayer.h"
 #import "RootViewController.h"
 
 @implementation AppDelegate
@@ -110,7 +111,7 @@
 	[self removeStartupFlicker];
 	
 	// Run the intro Scene
-	[[CCDirector sharedDirector] runWithScene: [SnakeLayer scene]];
+	[[CCDirector sharedDirector] runWithScene: [WelcomeLayer scene]];
 }
 
 
